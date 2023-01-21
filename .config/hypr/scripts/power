@@ -1,0 +1,74 @@
+#!/usr/bin/python
+
+import time, sys, json, argparse
+from subprocess import check_output as run
+from subprocess import CalledProcessError
+
+parser = argparse.ArgumentParser(
+    prog = 'power script',
+    description = 'Power-menu panel item handler',
+    epilog = 'Run without args to start'
+)
+
+parser.add_argument(
+    '-m', '--menu',
+    action='store_true'
+)
+
+args = parser.parse_args()
+
+def get_uptime():
+    with open('/proc/uptime', 'r') as f:
+        uptime_seconds = float(f.readline().split()[0])
+
+    return uptime_seconds
+
+def uptime():
+    if get_uptime() >= 3600:
+        return time.strftime('%Hh %Mm', time.gmtime(get_uptime()))
+    else:
+        return time.strftime('%Mm', time.gmtime(get_uptime()))
+
+def output(text):
+    sys.stdout.write(json.dumps({
+        "text": text,
+        "class": "custom-power",
+        "alt": "power"
+    }) + '\n')
+    sys.stdout.flush()
+
+def main_loop():
+    _upt = ''
+    while True:
+        upt = uptime()
+        if upt != _upt:
+            output(upt)
+            _upt = upt
+        time.sleep(1)
+
+def rofi_menu():
+    try:
+        items = {
+            'Power off': 1,
+            'Restart': 2
+            #'Suspend': 3,
+            #'Lock': 4
+        }
+        action = items[run(['/home/timoxa/.config/hypr/scripts/powermenu.sh', '\n'.join(items), str(len(items))]).decode().replace('\n', '')]
+        
+        if action == 1:
+            run(['sudo', 'poweroff'])
+        elif action == 2:
+            run(['sudo', 'reboot'])
+      # elif action == 3:
+      #     run(['/home/timoxa/.config/hypr/scripts/suspend'])
+      # elif action == 4:
+      #     run(['/home/timoxa/.config/hypr/scripts/lock'])
+    except CalledProcessError:
+        pass
+    
+if args.menu:
+    rofi_menu()
+
+else:
+    main_loop()

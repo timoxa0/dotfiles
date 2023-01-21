@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+
+# Pipewire
+#/usr/bin/pipewire & /usr/bin/pipewire-pulse & /usr/bin/wireplumber &
+
+# variables
+config=$HOME/.config/hypr
+scripts=$config/scripts
+
+# wallpaper set to cloud.png
+swww init && $scripts/wall &
+
+# effects
+$scripts/rgb &
+
+# other
+rofi-polkit-agent -theme $HOME/.config/rofi/confirm.rasi &
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP &
+
+# waybar
+$scripts/launch_waybar &
+sleep 1
+hyprctl keyword input:kb_layout us,ru
+
+# remove window buttons
+gsettings set org.gnome.desktop.wm.preferences button-layout ':'
+
+# discord
+discord --start-minimized &
+
+# telegram
+telegram-desktop -startintray &
+
+# keepassxc
+echo | keepassxc --pw-stdin --keyfile ~/Passwords.keyx ~/Passwords.kdbx
+

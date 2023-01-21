@@ -1,0 +1,3 @@
+#!/bin/bash
+
+imgpath=/home/timoxa/Pictures/$(date +"%Y%m%d_%HH%Mm%Ss.png"); grim -g "$(slurp -o)" - | tee $imgpath | wl-copy; if [ $(wc -c < $imgpath) = 0 ]; then rm $imgpath; fi

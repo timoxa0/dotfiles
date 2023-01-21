@@ -1,0 +1,92 @@
+{
+    "layer": "top", // Waybar at top layer
+    "position": "top", // Waybar position (top|bottom|left|right)
+    "height": 51, // Waybar height (to be removed for auto height)
+    // "width": 1280, // Waybar width
+    "spacing": 2, // Gaps between modules (4px)
+    // Choose the order of the modules
+    // "margin-left":25,
+    // "margin-right":25,
+    "margin-bottom":-3,
+    //"margin-top":5,
+    "modules-left": ["wlr/workspaces","cpu","memory","custom/player"],
+    "modules-right": ["hyprland/language","custom/vpn","pulseaudio","custom/power"],
+    "modules-center": ["clock","tray"],
+    // Modules configuration
+
+
+    // custom modules //
+    "custom/vpn": {
+        "format": "VPN: {}",
+        "exec": "/home/timoxa/.config/hypr/scripts/vpn tun0 2> /dev/null",
+        "on-click": "/home/timoxa/.config/hypr/scripts/vpn tun0 -t",
+        "return-type": "json"
+    },
+
+    "custom/player": {
+        "format": "{icon} {}",
+        "escape": true,
+        "return-type": "json",
+        "max-length": 60,
+        //"interval": 30, // Remove this if your script is endless and write in loop
+        "on-click": "playerctl play-pause",
+        "on-click-right": "",
+        //"smooth-scrolling-threshold": 10, // This value was tested using a trackpad, it should be lowered if using a mouse.
+        "on-scroll-up" : "playerctl next",
+        "on-scroll-down" : "playerctl previous",
+        "exec": "/home/timoxa/.config/hypr/scripts/mediaplayer.py 2> /dev/null", // Script in resources/custom_modules folder
+        "exec-if": "playerctl status"
+    },
+
+    "custom/power": {
+        "format": "Uptime: {}",
+        "exec": "/home/timoxa/.config/hypr/scripts/power 2> /dev/null",
+        "on-click": "alacritty --config-file ~/.config/alacritty/nitch.yml -e bash -c 'nitch && cat'",
+        "return-type": "json"
+    },
+    // End of custom modules //
+
+    "wlr/workspaces": {
+        "format": "{icon}",
+        "format-active": " {icon} ",
+        "on-click": "activate"
+        // "format-icons":{
+        //   "10":"10"
+        // }
+    },
+    "tray": {
+        "icon-size": 21,
+        "spacing": 8,
+        "show-passive-items": false
+    },
+    "clock": {
+        // "timezone": "America/New_York",
+        "tooltip": false,
+        "interval": 60,
+        "format": "{:%H:%M}",
+        "max-length": 25,
+        "on-click": "alacritty  --class calendar -e calcure"
+    },
+    "cpu": {
+        "interval":1,
+        "format": "CPU: {usage}%",
+        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+    },
+    "memory": {
+        "format": "RAM: {percentage}%",
+        "interval": 1,
+        "on-click": "alacritty --class system_monitor -e btop",
+        "max-lenght": 35
+    },
+    "network": {
+        "interface": "enp4s0",
+        "format-disconnected": "disconnected eth0",
+        "tooltip-format": "{ifname} via {gwaddr} "
+    },
+    "pulseaudio": {
+        "format": "Volume: {volume}%",
+        "scroll-step": 1,
+        "on-click": "pavucontrol"
+    }
+}
+

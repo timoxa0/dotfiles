@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/home/timoxa/.config/hypr/scripts/lock &
+systemctl suspend &

@@ -1,0 +1,60 @@
+#!/usr/bin/python
+
+import os, sys, json, argparse
+from time import sleep
+
+
+parser = argparse.ArgumentParser(
+    prog = 'vpn script',
+    description = 'VPN panel item handler',
+    epilog = 'Run without args to start'
+)
+
+parser.add_argument(
+    'ifname'
+)
+
+parser.add_argument(
+    '-t', '--toggle',
+    action='store_true'
+)
+
+args = parser.parse_args()
+
+def check(ifname, rtype=bool):
+    if rtype==bool:
+        return os.system(f'test -d /proc/sys/net/ipv4/conf/{ifname}') == 0
+    elif rtype==str:
+        return "Connected" if os.system(f'test -d /proc/sys/net/ipv4/conf/{ifname}') == 0 else "Disconnected"
+
+def notify_send(title, text):
+    os.system(f'notify-send "{title}" "{text}"')
+
+def main_loop():
+    _status = None
+    while True:
+        status = check(args.ifname, str)
+        if status != _status:
+            sys.stdout.write(json.dumps(
+                {
+                    "text": status,
+                    "class": "custom-vpn",
+                    "alt": "vpn"
+                }
+            ) + '\n')
+            sys.stdout.flush()
+            notify_send('VPN Status', f'VPN {status}')
+            _status = status
+        sleep(0.01)
+
+if args.toggle:
+    if check(args.ifname, bool):
+        syscode = os.system('sudo systemctl stop openvpn-client@pc')
+
+    else:
+        syscode = os.system('sudo systemctl start openvpn-client@pc')
+    
+    exit(syscode)
+
+else:
+    main_loop()

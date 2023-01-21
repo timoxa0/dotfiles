@@ -1,0 +1,13 @@
+#!/bin/python3
+import os
+
+base_folder = "/home/timoxa/Pictures/wallpapers/"
+
+wallpapers = {
+        "HDMI-A-1": "neon-city-buildings-4k-on-3840x2160.jpg",
+        "DP-1": "5jwtpab3nny81.png",
+        "HDMI-A-2": "neon-city-buildings-4k-on-3840x2160.jpg"
+        }
+
+for mon in wallpapers:
+    os.system(f"swww img {os.path.join(base_folder, wallpapers[mon])} -o {mon} --transition-type center --transition-fps 60 --transition-duration 2")
